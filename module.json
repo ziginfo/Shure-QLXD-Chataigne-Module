@@ -18,7 +18,7 @@
     "protocol": "Direct",
     "output": {
       "local": false,
-      "remoteHost" : "",
+      "remoteHost" : "192.168.50.78",
       "remotePort": 2202
     }
   },
@@ -92,7 +92,10 @@
     
     "Channel 1": {
       "type": "Container",
-      "collapsed": false,
+      "collapsed": true,
+      "Update": {
+        "type": "Trigger"
+      },
       "Name": {
         "type": "String",
          "readOnly": true
@@ -184,7 +187,7 @@
 
   "commands": {
      
-    "send Sring": {
+    "send String": {
       "menu": "",
       "callback": "sendLine",
       "parameters": {
@@ -251,6 +254,14 @@
           "default": 1
         }
       }
+    },
+    "Request RF Level": {
+      "menu": "Requests",
+      "callback": "rf_lvl"
+    },
+    "Request Audio Level": {
+      "menu": "Requests",
+      "callback": "audio_lvl"
     },
     "Update all Values": {
       "menu": "Requests",

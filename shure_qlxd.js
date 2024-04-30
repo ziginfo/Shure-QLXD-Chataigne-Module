@@ -1,8 +1,9 @@
 // =========== VARS ===========================
-var channel_1_flashtime = 0;
+//var channel_1_flashtime = 0;
 var todo = false;
 var string= "" ;
 var ch = 1 ;
+var model = "SHURE QLX-D" ;
 
 // =======================================
 //			FUNCTION INIT
@@ -12,6 +13,8 @@ function init() {
   script.setUpdateRate(1);
   //request all value fields
   getAll();
+  
+  local.values.device.modelName.set(model);
 }
 
 function update(delta){
@@ -166,12 +169,17 @@ function dataReceived(inputData) {
         local.values.channel1.diversityAntenna.set(ant);
       }
       if (parts[2] == "FREQUENCY") {
-        //root.modules.shureQLX_D.parameters.updateRateCh1
-        //root.modules.shureQLX_D.values.channel1.audioLevelRMS
         dec = parts[3].substring(parts[3].length - 3, parts[3].length);
         lead = parts[3].substring(0, parts[3].length - 3);
         local.values.channel1.frequency.set(lead + "." + dec);
+        var band = "--" ;
+        if(lead >470 && lead< 534){ band = "G51" ;}
+        if(lead >534 && lead< 598){ band = "H51" ;}
+        if(lead >606 && lead< 670){ band = "K51" ;}
+        local.values.device.rfBand.set(band);
       }
+      
+      
       if (parts[1] == "ENCRYPTION") {
         local.values.channel1.encryption.set(parts[2]);
       }
@@ -255,32 +263,25 @@ function moduleValueChanged(value) {
       setDeviceID(value.get());
     }
   }
-  if (value.getParent().name.substring(0, 7) == "channel") {
-    channel = value.getParent().name.substring(7, 8);
-    if (value.name == "flashing" && value.get() == 1) {
-      setFlashing(channel);
+  if (value.name == "update") {
+      local.send("< GET 1 ALL >");
     }
-
-  }
 }
 
 // =======================================
 // 				 REQUESTS 
 // =======================================
 
-function requestModel() {
-  //< GET MODEL >
-  local.send("< GET MODEL >");
-}
-
 function requestDeviceID() {
-  //< GET DEVICE_ID >
   local.send("< GET DEVICE_ID >");
 }
 
-function requestRfBand() {
-  //< GET RF_BAND >
-  local.send("< GET RF_BAND >");
+function rf_lvl() {
+  local.send("< GET 1 RX_RF_LVL >");
+}
+
+function audio_lvl() {
+  local.send("< GET 1 AUDIO_LVL >");
 }
 
 function requestLockState() {
@@ -360,7 +361,6 @@ function decAudioGain(addgain) {
 
 function setMeterRate(rate) {
   rate = toInt(rate);
-  //< SET x METER_RATE 01000 >
   if ((ch == 1 || ch == 2) && ((rate >= 100 && rate <= 65535) || rate == 0)) {
     local.send("< SET " + ch + " METER_RATE " + rate + " >");
   }
