@@ -136,7 +136,7 @@
         "type": "Float",
         "ui": "slider" ,
         "min" : 0 ,
-        "max" : 115 ,
+        "max" : 120 ,
         "readOnly": true
       },
       "Audio Level": {

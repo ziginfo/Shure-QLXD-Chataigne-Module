@@ -142,9 +142,10 @@ function dataReceived(inputData) {
       }
       if (parts[2] == "RX_RF_LVL") {
       var rfparse = parseFloat(parts[3]) ;
-      	if (rfparse > 104) {rf = rfparse+" dBm - OverLoad!";}
-         if (rfparse < 30) {rf = "RF too low !";}
-         else {rf = rfparse+" dBm";}
+        if (rfparse < 30) {rf = "RF too low !";}
+        else if (rfparse > 104) {rf = rfparse + " dBm - OverLoad!";}
+        else {rf = rfparse+" dBm";}
+        
         local.values.channel1.rfLevel.set(rf);
         local.values.channel1.rfLevelPeak.set(rfparse);
       }
@@ -152,8 +153,10 @@ function dataReceived(inputData) {
       if (parts[2] == "AUDIO_LVL") {
       var parselvl = parseFloat(parts[3]);
       var level = parselvl - 50 ;
-      var lvlstring = level+" dbFS" ;
-     	local.values.channel1.audioLevel.set(level+" dbFS");
+      if (level >= -10)
+        {lvlstring = level+" dbFS - Clip!" ;}
+      else {lvlstring = level+" dbFS" ;}
+     	local.values.channel1.audioLevel.set(lvlstring);
         local.values.channel1.audioLevelPeak.set(level);
       }
            
@@ -221,8 +224,9 @@ function dataReceived(inputData) {
         
          //RF Level
          var rfparse = parseFloat(parts[4]) ;
-         if (rfparse > 104) {rf = rfparse+" dBm - OverLoad!";}
+        
          if (rfparse < 30) {rf = "RF too low !";}
+         else if (rfparse > 104) {rf = rfparse + " dBm - OverLoad!";}
          else {rf = rfparse+" dBm";}
         local.values.channel1.rfLevel.set(rf);
         local.values.channel1.rfLevelPeak.set(rfparse);
