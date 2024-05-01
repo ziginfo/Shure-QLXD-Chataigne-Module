@@ -4,6 +4,27 @@ var todo = false;
 var string= "" ;
 var ch = 1 ;
 var model = "SHURE QLX-D" ;
+var contain = {
+	"name"	:	["Name", "s", ""],
+	"trans" : ["Transmitter", "s",""],
+	"gain" : ["Audio Gain", "s",""],
+	"rfpower" : ["RF Power", "s",""],
+	"frequ" : ["Frequency", "s",""],
+	"rfgroup" : ["RF Group", "s",""],
+	"rfchann" : ["RF Channel", "s",""],
+	"antenna" : ["Antenna", "s",""],
+	"rflvl" : ["RF Level", "s", ""],
+	"rfgpeak" : ["RF Level Peak", "f1", ""],
+	"audiolvl" : ["Audio Level", "s", ""],
+	"audlvlpk" : ["Audio Level Peak", "f2", ""],	
+	"encrypt" : ["Encryption", "s", ""],
+	"battrun" : ["Battery Runtime", ""],
+	"battype" : ["Battery Type", "s", "gainEq2", "eq/2/g"],
+	"battcharge" : ["Battery Charge", "f3", ""]};
+
+//	"battbars" : ["Battery Bars", "en", ""]
+	
+	
 
 // =======================================
 //			FUNCTION INIT
@@ -12,9 +33,52 @@ var model = "SHURE QLX-D" ;
 function init() {
   script.setUpdateRate(1);
   //request all value fields
-  getAll();
-  
+  getAll(); 
   local.values.device.modelName.set(model);
+
+
+// =======================================
+//			CREATE CONTAINERS
+// =======================================
+
+  
+//=============== Device Container ==================
+	var dev = local.values.addContainer("Device");
+		dev.setCollapsed(true);		
+		r=dev.addStringParameter("Model Name", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("Device ID", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("MAC Address", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("RF Band", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("Lock Status", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("FW Version", "","");
+		r.setAttribute("readonly" ,true);
+		
+//============== Channels Container ==================
+	 var chan = local.values.addContainer("Channel 1");
+		chan.setCollapsed(true);		
+		
+		var champs = util.getObjectProperties(contain);
+		for (var n = 0; n < champs.length; n++) {
+			if (contain[champs[n]][1] == "s") {
+			p=chan.addStringParameter(contain[champs[n]][0], "", ""); 
+			p.setAttribute("readonly" ,true);}			
+			else if (contain[champs[n]][1] == "f1") {
+			p=chan.addFloatParameter(contain[champs[n]][0], "", 0,0,115); 
+			p.setAttribute("readonly" ,true);}			
+			else if (contain[champs[n]][1] == "f2") {
+			p=chan.addFloatParameter(contain[champs[n]][0], "", 0,-50,-1);
+			p.setAttribute("readonly" ,true);}			
+			else if (contain[champs[n]][1] == "f3") {
+			p=chan.addFloatParameter(contain[champs[n]][0], "", 0,0,5); 
+			p.setAttribute("readonly" ,true);} }			
+			p=chan.addEnumParameter("Battery Bars", "Battery Bars","unknown","255","5/5 full","5","4/5 bars","4","3/5 bars","3","2/5 bars","2","1/5 bars","1","0/5 alerte !", "0");
+			p.setAttribute("readonly" ,true);	
+
 }
 
 function update(delta){
@@ -95,7 +159,7 @@ function dataReceived(inputData) {
         local.values.device.rfBand.set(string);
       }
       if (parts[1] == "LOCK_STATUS") {
-        local.values.device.lockStatus.setData(string);
+        local.values.device.lockStatus.set("parts[3]");
       }
       if (parts[1] == "FLASH") {
         if (parts[2] == "ON") {
@@ -169,7 +233,7 @@ function dataReceived(inputData) {
       	if (ant== "XX" || ant== "" ){ ant = "RF no antenna" ;}
       	if (ant== "AX"){ ant = "antenna A" ;}
       	if (ant== "XB"){ ant = "antenna B" ;}
-        local.values.channel1.diversityAntenna.set(ant);
+        local.values.channel1.antenna.set(ant);
       }
       if (parts[2] == "FREQUENCY") {
         dec = parts[3].substring(parts[3].length - 3, parts[3].length);
@@ -220,9 +284,9 @@ function dataReceived(inputData) {
       	if (ant== "XX" || ant== "" ){ ant = "RF no antenna" ;}
       	if (ant== "AX"){ ant = "antenna A" ;}
       	if (ant== "XB"){ ant = "antenna B" ;}
-        local.values.channel1.diversityAntenna.set(ant);
+        local.values.channel1.antenna.set(ant);
         
-         //RF Level
+    //RF Level
          var rfparse = parseFloat(parts[4]) ;
         
          if (rfparse < 30) {rf = "RF too low !";}
@@ -231,7 +295,7 @@ function dataReceived(inputData) {
         local.values.channel1.rfLevel.set(rf);
         local.values.channel1.rfLevelPeak.set(rfparse);
         
-        //Audio Level Peak
+	//Audio Level Peak
         var parselvl = parseFloat(parts[5]) ;
 		var level = parselvl - 50 ;
         if (level >= -10)
@@ -289,43 +353,39 @@ function audio_lvl() {
 }
 
 function requestLockState() {
-  //< GET LOCK_STATUS >
   local.send("< GET LOCK_STATUS >");
 }
 
 function requestFwVersion() {
-  //< GET FW_VER >
   local.send("< GET FW_VER >");
 }
 
 function requestChName(ch) {
-  //< GET x CHAN_NAME >
   local.send("< GET " + ch + " CHAN_NAME >");
 }
 
 function requestChAGain(ch) {
-  //< GET x AUDIO_GAIN >
   local.send("< GET " + ch + " AUDIO_GAIN >");
 }
 
 function requestChAudioOutLvlSwitch(ch) {
-  //< GET x AUDIO_OUT_LVL_SWITCH >
   local.send("< GET " + ch + " AUDIO_OUT_LVL_SWITCH >");
 }
 
 function requestChGroup(ch) {
-  //< GET x GROUP_CHANNEL >
   local.send("< GET " + ch + " GROUP_CHANNEL >");
 }
 
 function requestChFreq() {
-  //< GET x FREQUENCY >
   local.send("< GET " + ch + " FREQUENCY >");
 }
 
 function getAll() {
   local.send("< GET 1 ALL >");
-  //Message received : < GET 0 ALL >< SET 0 METER_RATE 5000 > //companion init
+}
+
+function requests(string) {
+  local.send(string);
 }
 
 // =======================================
@@ -346,21 +406,15 @@ function setChannelName(newName) {
 }
 
 function setAudioGain(gain) {
-  //< SET x AUDIO_GAIN 40 > 
     local.send("< SET " + ch + " AUDIO_GAIN " + (gain + 18) + " >");
-
 }
 
 function incAudioGain(addgain) {
-  //< SET x AUDIO_GAIN 40 >
     local.send("< SET " + ch + " AUDIO_GAIN INC " + addgain + " >");
-
 }
 
 function decAudioGain(addgain) {
-  //< SET x AUDIO_GAIN 40 >
 	local.send("< SET " + ch + " AUDIO_GAIN DEC " + addgain + " >");
-
 }
 
 function setMeterRate(rate) {
