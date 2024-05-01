@@ -1,0 +1,177 @@
+{
+  "name": "Shure QLX-D",
+  "type": "TCP Client",
+  "path": "Hardware",
+
+  "version": "1.3",
+  "description": "Monitor and Control for Shure ULX-D wireless systems",
+  "url": "https://github.com/ziginfo/Shure-ULXD-Chataigne-Module",
+  "downloadURL": "https://github.com/ziginfo/Shure-ULXD-Chataigne-Module/archive/refs/heads/main.zip",
+
+  "hasInput": true,
+  "hasOutput": true,
+
+  "hideDefaultCommands": true,
+
+  "defaults": {
+    "autoAdd": false,
+    "protocol": "Direct",
+    "output": {
+      "local": false,
+      "remoteHost" : "",
+      "remotePort": 2202
+    }
+  },
+
+  "parameters": {
+    "Update Rate Ch 1": {
+      "type": "Enum",
+      "description": "Select the Update Rate for constantly changing infos (RF Signal Level, Audio Signal Level)",
+      "options": {
+       "no Updates": "00000",
+            "very slow (15sec)": "15000",
+            "slow (5sec)": "05000",
+            "medium (2,5sec)": "02500",
+            "fast (1sec)": "01000",
+            "faster (0,5sec)": "00500",
+            "very fast (0.2sec)": "00200",
+            "fastest (0,1sec)": "00100"
+      }
+    }
+  },
+
+  "hideDefaultParameters": [
+    "autoAdd",
+    "protocol",
+    "messageStructure",
+    "customSeparator",
+    "firstValueIsTheName",
+    "output/local",
+    "output/remotePort",
+    "pass_through",
+    "receiveFrequency"
+  ],
+
+  "scripts": ["shure_qlxd.js"],
+
+  "values": {
+  },
+
+  "commands": {
+     
+    "send Sring": {
+      "menu": "",
+      "callback": "sendLine",
+      "parameters": {
+        
+        "Command Line": {
+          "type": "String"
+        }
+      }
+    },
+    "set Device Name": {
+      "menu": "Actions",
+      "callback": "setDeviceID",
+      "parameters": {
+        "Device Name": {
+          "type": "String"
+        }
+      }
+    },
+    "set Channel Name": {
+      "menu": "Actions",
+      "callback": "setChannelName",
+      "parameters": {
+        
+        "new Name": {
+          "type": "String"
+        }
+      }
+    },
+    "set Audio Gain": {
+      "menu": "Actions",
+      "callback": "setAudioGain",
+      "parameters": {
+       
+        "Gain": {
+          "type": "Integer",
+          "min": -18,
+          "max": 42,
+          "default": 0
+        }
+      }
+    },
+    "increase Audio Gain": {
+      "menu": "Actions",
+      "callback": "incAudioGain",
+      "parameters": {
+       
+        "Gain increase": {
+          "type": "Integer",
+          "min": 0,
+          "max": 10,
+          "default": 1
+        }
+      }
+    },
+    "decrease Audio Gain": {
+      "menu": "Actions",
+      "callback": "decAudioGain",
+      "parameters": {
+       
+        "Gain reduction": {
+          "type": "Integer",
+          "min": 0,
+          "max": 10,
+          "default": 1
+        }
+      }
+    },
+    "Update all Values": {
+      "menu": "Requests",
+      "callback": "getAll"
+    },
+      "Requests": {
+      "menu": "Requests",
+      "callback": "requests",
+      "parameters": {
+        "Rate": {
+          "type": "Enum",
+          "options": {
+            "get All": "< GET 1 ALL >",
+            "get RF Level": "< GET 1 RX_RF_LVL >",
+            "get Audio Level": "< GET 1 AUDIO_LVL >",
+            "get Audio Gain": "< GET 1 AUDIO_GAIN >",
+            "get Emitter Name": "< GET DEVICE_ID >",
+            "get Channel Name": "< GET 1 CHAN_NAME >",
+            "get Firmware": "< GET FW_VER >",
+            "get Frequency": "< GET 1 FREQUENCY >"  }  }
+      }
+    },
+    "Set Meter Rate": {
+      "menu": "Requests",
+      "callback": "setMeterRate",
+      "parameters": {
+        "Channel": {
+          "type": "Integer",
+          "min": 1,
+          "max": 2,
+          "default": 1
+        },
+        "Rate": {
+          "type": "Enum",
+          "options": {
+            "no Updates": "00000",
+            "very slow (15sec)": "15000",
+            "slow (5sec)": "05000",
+            "medium (2,5sec)": "02500",
+            "fast (1sec)": "01000",
+            "faster (0,5sec)": "00500",
+            "very fast (0.2sec)": "00200",
+            "fastest (0,1sec)": "00100"
+          }
+        }
+      }
+    }
+  }
+}
