@@ -18,7 +18,7 @@
     "protocol": "Direct",
     "output": {
       "local": false,
-      "remoteHost" : "",
+      "remoteHost" : "192.168.50.78",
       "remotePort": 2202
     }
   },
@@ -28,7 +28,7 @@
       "type": "Enum",
       "description": "Select the Update Rate for constantly changing infos (RF Signal Level, Audio Signal Level)",
       "options": {
-       "no Updates": "00000",
+       		"no Updates": "00000",
             "very slow (15sec)": "15000",
             "slow (5sec)": "05000",
             "medium (2,5sec)": "02500",
@@ -59,18 +59,19 @@
 
   "commands": {
      
-    "send Sring": {
+    "send String": {
       "menu": "",
       "callback": "sendLine",
-      "parameters": {
-        
+      "parameters": {    
         "Command Line": {
-          "type": "String"
+          "type": "String",
+          "default": "< INSERT THE COMMAND HERE >",
+          "multiline" : true
         }
       }
     },
     "set Device Name": {
-      "menu": "Actions",
+      "menu": "Controls",
       "callback": "setDeviceID",
       "parameters": {
         "Device Name": {
@@ -79,7 +80,7 @@
       }
     },
     "set Channel Name": {
-      "menu": "Actions",
+      "menu": "Controls",
       "callback": "setChannelName",
       "parameters": {
         
@@ -89,7 +90,7 @@
       }
     },
     "set Audio Gain": {
-      "menu": "Actions",
+      "menu": "Controls",
       "callback": "setAudioGain",
       "parameters": {
        
@@ -102,7 +103,7 @@
       }
     },
     "increase Audio Gain": {
-      "menu": "Actions",
+      "menu": "Controls",
       "callback": "incAudioGain",
       "parameters": {
        
@@ -115,7 +116,7 @@
       }
     },
     "decrease Audio Gain": {
-      "menu": "Actions",
+      "menu": "Controls",
       "callback": "decAudioGain",
       "parameters": {
        

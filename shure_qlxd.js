@@ -7,6 +7,8 @@ var model = "SHURE QLX-D" ;
 var contain = {
 	"name"	:	["Name", "s", ""],
 	"trans" : ["Transmitter", "s",""],
+	"pwrlock" : ["Power Lock", "s",""],
+	"menlock" : ["Menu Lock", "s",""],
 	"gain" : ["Audio Gain", "s",""],
 	"rfpower" : ["RF Power", "s",""],
 	"frequ" : ["Frequency", "s",""],
@@ -31,6 +33,9 @@ function init() {
   //request all value fields
   getAll();
   
+  
+  Sync = local.values.addTrigger("Update", "Request all the Values from the Hardware !!" , false);
+  
 // =======================================
 //			CREATE CONTAINERS
 // =======================================
@@ -47,7 +52,9 @@ function init() {
 		r.setAttribute("readonly" ,true);
 		r=dev.addStringParameter("RF Band", "","");
 		r.setAttribute("readonly" ,true);
-		r=dev.addStringParameter("Lock Status", "","");
+		r=dev.addStringParameter("Power Lock", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("Menu Lock", "","");
 		r.setAttribute("readonly" ,true);
 		r=dev.addStringParameter("FW Version", "","");
 		r.setAttribute("readonly" ,true);
@@ -55,7 +62,7 @@ function init() {
 //============== Channels Container ==================
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	 var chan = local.values.addContainer("Channel 1");
-		chan.setCollapsed(true);				
+		chan.setCollapsed(true);			
 		var champs = util.getObjectProperties(contain);
 		for (var n = 0; n < champs.length; n++) {
 			if (contain[champs[n]][1] == "s") {
@@ -154,9 +161,6 @@ function dataReceived(inputData) {
       if (parts[1] == "RF_BAND") {
         local.values.device.rfBand.set(string);
       }
-      if (parts[1] == "LOCK_STATUS") {
-        local.values.device.lockStatus.setData(string);
-      }
       if (parts[1] == "FLASH") {
         if (parts[2] == "ON") {
           local.values.device.flashing.set(true);
@@ -168,13 +172,7 @@ function dataReceived(inputData) {
 //			 CHANNEL INFOS 
 // =======================================
 
-      if (parts[2] == "FLASH") {
-        if (parts[3] == "ON") {
-          local.values.getChild("channel" + parts[1]).flashing.set(true);
-        } else {
-          local.values.getChild("channel" + parts[1]).flashing.set(false);
-        }
-      }
+
       if (parts[2] == "CHAN_NAME") {
         local.values.channel1.getChild("name")
           .set(string);
@@ -182,6 +180,12 @@ function dataReceived(inputData) {
       if (parts[2] == "TX_TYPE") {
         local.values.channel1.getChild("transmitter")
           .set(parts[3]);
+      }
+       if (parts[2] == "TX_PWR_LOCK") {
+        local.values.channel1.powerLock.set(parts[3]);
+      }
+      if (parts[2] == "TX_MENU_LOCK") {
+        local.values.channel1.menuLock.set(parts[3]);
       }
       if (parts[2] == "METER_RATE") {
         local.parameters.getChild("updateRateCh" + parts[1]).setData(parts[3]);
@@ -301,6 +305,10 @@ function dataReceived(inputData) {
   }
 }
 
+// =======================================
+// 				PARAM CHANGE
+// =======================================
+
 function moduleParameterChanged(param) {
   //script.log(param.name + " parameter changed, new value: " + param.get());
   //root.modules.shureQLX_D.parameters.output.isConnected
@@ -312,9 +320,16 @@ function moduleParameterChanged(param) {
 	{local.send("< SET 1 METER_RATE " +value+ " >");}
 }
 
+
+// =======================================
+// 				 VALUE CHANGE 
+// =======================================
+
 function moduleValueChanged(value) {
-  //script.log(value.name + " value changed, new value: " + value.get());
-  //script.log("parent element: " + value.getParent().name);
+	
+	if (value.name == "update") {
+      local.send("< GET 1 ALL >");
+    }
   if (value.getParent().name == "device") {
     if (value.name == "flashing" && value.get() == 1) {
       setFlashing(0);
@@ -413,26 +428,19 @@ function setChannelName(newName) {
 }
 
 function setAudioGain(gain) {
-  //< SET x AUDIO_GAIN 40 > 
     local.send("< SET " + ch + " AUDIO_GAIN " + (gain + 18) + " >");
-
 }
 
 function incAudioGain(addgain) {
-  //< SET x AUDIO_GAIN 40 >
     local.send("< SET " + ch + " AUDIO_GAIN INC " + addgain + " >");
-
 }
 
 function decAudioGain(addgain) {
-  //< SET x AUDIO_GAIN 40 >
 	local.send("< SET " + ch + " AUDIO_GAIN DEC " + addgain + " >");
-
 }
 
 function setMeterRate(rate) {
   rate = toInt(rate);
-  //< SET x METER_RATE 01000 >
   if ((ch == 1 || ch == 2) && ((rate >= 100 && rate <= 65535) || rate == 0)) {
     local.send("< SET " + ch + " METER_RATE " + rate + " >");
   }
