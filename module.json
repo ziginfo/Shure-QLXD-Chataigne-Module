@@ -18,7 +18,7 @@
     "protocol": "Direct",
     "output": {
       "local": false,
-      "remoteHost" : "192.168.50.78",
+      "remoteHost" : "",
       "remotePort": 2202
     }
   },
@@ -52,7 +52,7 @@
     "receiveFrequency"
   ],
 
-  "scripts": ["shure_qlxd.js"],
+  "scripts": ["qlxd.js"],
 
   "values": {
   },
@@ -132,21 +132,24 @@
       "menu": "Requests",
       "callback": "getAll"
     },
-      "Requests": {
+    "Requests": {
       "menu": "Requests",
       "callback": "requests",
       "parameters": {
         "Rate": {
           "type": "Enum",
           "options": {
-            "get All": "< GET 1 ALL >",
-            "get RF Level": "< GET 1 RX_RF_LVL >",
-            "get Audio Level": "< GET 1 AUDIO_LVL >",
-            "get Audio Gain": "< GET 1 AUDIO_GAIN >",
-            "get Emitter Name": "< GET DEVICE_ID >",
-            "get Channel Name": "< GET 1 CHAN_NAME >",
+            "get All": "< GET 0 ALL >",
+            "get RF Level": "< GET 0 RX_RF_LVL >",
+            "get Audio Level": "< GET 0 AUDIO_LVL >",
+            "get Audio Gain": "< GET 0 AUDIO_GAIN >",
+            "get Battery Bars": "< GET 0 TX_BATT_BARS >",
+            "get Receiver Name": "< GET DEVICE_ID >",
+          	"get Transmitter Name": "< GET 0 TX_TYPE >",
+            "get Channel Name": "< GET 0 CHAN_NAME >",
             "get Firmware": "< GET FW_VER >",
-            "get Frequency": "< GET 1 FREQUENCY >"  }  }
+            "get Frequency": "< GET 0 FREQUENCY >",
+            "get Group&Channel": "< GET 0 GROUP_CHAN >"  }  }
       }
     },
     "Set Meter Rate": {
