@@ -9,10 +9,10 @@ https://github.com/ziginfo/Shure-ULXD-Chataigne-Module
 
 This module is based on the SLXD-Module from [NiklasBerlin](https://github.com/niklasberlin/Shure-SLXD-Chataigne-module)
 
-#### copyright
-The Shure Icon is copyrighted by Shure Incorporated    
-
 Have Fun
 
 To learn more about Chataigne, please visit : http://benjamin.kuperberg.fr/chataigne/    
-And Ben's Youtube channel where you can find tutorials : https://youtu.be/RSBU9MwJNLY
+And Ben's Youtube channel where you can find tutorials : https://youtu.be/RSBU9MwJNLY     
+#### copyright
+The Shure Icon is copyrighted by Shure Incorporated    
+
