@@ -9,7 +9,7 @@ https://github.com/ziginfo/Shure-ULXD-Chataigne-Module
 
 This module is based on the SLXD-Module from [NiklasBerlin](https://github.com/niklasberlin/Shure-SLXD-Chataigne-module)
 
-## copyright
+#### copyright
 The Shure Icon is copyrighted by Shure Incorporated    
 
 Have Fun
