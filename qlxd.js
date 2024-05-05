@@ -5,24 +5,26 @@ var string= "" ;
 var ch = 1 ;
 var model = "SHURE QLX-D" ;
 var contain = {
-	"name"	:	["Name", "s", "CHAN_NAME"],
-	"trans" : ["Transmitter", "s","TX_TYPE"],
-	"gain" : ["Audio Gain", "s","AUDIO_GAIN"],
-	"rfpower" : ["RF Power", "s","TX_RF_PWR"],
-	"frequ" : ["Frequency", "s","FREQUENCY"],
-	"rfgroup" : ["RF Group", "s","GROUP_CHAN"],
-	"rfchann" : ["RF Channel", "s",""],
-	"antenna" : ["Antenna", "s","RF_ANTENNA"],
-	"rflvl" : ["RF", "s", ""],
-	"rfgpeak" : ["RF Level", "f1", "RX_RF_LVL"],
-	"audiolvl" : ["Audio Level", "s", ""],
-	"audlvlpk" : ["Audio Level Peak", "f2", "AUDIO_LVL"],	
-	"encrypt" : ["Encryption", "s", ""],
-	"battrun" : ["Battery Runtime", "s", "BATT_RUN_TIME"],
-	"battcycle" : ["Battery Cycles", "s", ""],
-	"battype" : ["Battery Type", "s", "BATT_TYPEBATT_CYCLE"],
-	"battcharge" : ["Battery Charge", "f3", "BATT_BARS"],
-	"battbars" : ["Battery Bars", "en", ""]};
+	"name"	:		["Name", "s", "CHAN_NAME"],
+	"trans" : 		["Transmitter", "s","TX_TYPE"],
+	"gain" : 		["Audio Gain", "s","AUDIO_GAIN"],
+	"txoffset" : 	["Gain Offset", "s","TX_OFFSET"],
+	"txmute" : 		["Mute", "s","TX_MUTE_STATUS "],
+	"rfpower" : 	["RF Power", "s","TX_RF_PWR"],
+	"frequ" : 		["Frequency", "s","FREQUENCY"],
+	"rfgroup" : 	["RF Group", "s","GROUP_CHAN"],
+	"rfchann" : 	["RF Channel", "s",""],
+	"antenna" : 	["Antenna", "s","RF_ANTENNA"],
+	"rflvl" : 		["RF", "s", ""],
+	"rfgpeak" : 	["RF Level", "f1", "RX_RF_LVL"],
+	"audiolvl" : 	["Audio Level", "s", ""],
+	"audlvlpk" : 	["Audio Level Peak", "f2", "AUDIO_LVL"],	
+	"encrypt" : 	["Encryption", "s", ""],
+	"battrun" : 	["Battery Runtime", "s", "BATT_RUN_TIME"],
+	"battcycle" : 	["Battery Cycles", "s", ""],
+	"battype" : 	["Battery Type", "s", "BATT_TYPEBATT_CYCLE"],
+	"battcharge" : 	["Battery Charge", "f3", "BATT_BARS"],
+	"battbars" : 	["Battery Bars", "en", ""]};
 
 // =======================================
 //			FUNCTION INIT
@@ -167,7 +169,7 @@ function dataReceived(inputData) {
         }
       }
 // =======================================
-//			 CHANNEL INFOS 
+//			 TRANSMITTER INFOS 
 // =======================================
 
 
@@ -179,7 +181,7 @@ function dataReceived(inputData) {
         local.values.channel1.getChild("transmitter")
           .set(parts[3]);
       }
-       if (parts[2] == "TX_PWR_LOCK") {
+      if (parts[2] == "TX_PWR_LOCK") {
         local.values.device.powerLock.set(parts[3]);
       }
       if (parts[2] == "TX_MENU_LOCK") {
@@ -201,6 +203,15 @@ function dataReceived(inputData) {
           val = val+" db" ;
         //root.modules.shureQLX_D.parameters.updateRateCh1
         local.values.channel1.audioGain.set(val);
+      }
+      if (parts[2] == "TX_OFFSET") {
+		var val = parseFloat(parts[3]) ;
+		if (val == 255) { val = "NO TRANSMITTER" ;}
+		else {val = val+" db" ;}
+        local.values.channel1.gainOffset.set(val);
+      }
+       if (parts[2] == "TX_MUTE_STATUS") {
+        local.values.channel1.mute.set(parts[3]);
       }
       if (parts[2] == "RX_RF_LVL") {
       var rfparse = parseFloat(parts[3]) -115;
