@@ -18,7 +18,7 @@
     "protocol": "Direct",
     "output": {
       "local": false,
-      "remoteHost" : "",
+      "remoteHost" : "192.168.50.78",
       "remotePort": 2202
     }
   },
@@ -156,12 +156,6 @@
       "menu": "Requests",
       "callback": "setMeterRate",
       "parameters": {
-        "Channel": {
-          "type": "Integer",
-          "min": 1,
-          "max": 2,
-          "default": 1
-        },
         "Rate": {
           "type": "Enum",
           "options": {

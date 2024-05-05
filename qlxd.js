@@ -5,23 +5,24 @@ var string= "" ;
 var ch = 1 ;
 var model = "SHURE QLX-D" ;
 var contain = {
-	"name"	:	["Name", "s", ""],
-	"trans" : ["Transmitter", "s",""],
-	"gain" : ["Audio Gain", "s",""],
-	"rfpower" : ["RF Power", "s",""],
-	"frequ" : ["Frequency", "s",""],
-	"rfgroup" : ["RF Group", "s",""],
+	"name"	:	["Name", "s", "CHAN_NAME"],
+	"trans" : ["Transmitter", "s","TX_TYPE"],
+	"gain" : ["Audio Gain", "s","AUDIO_GAIN"],
+	"rfpower" : ["RF Power", "s","TX_RF_PWR"],
+	"frequ" : ["Frequency", "s","FREQUENCY"],
+	"rfgroup" : ["RF Group", "s","GROUP_CHAN"],
 	"rfchann" : ["RF Channel", "s",""],
-	"antenna" : ["Antenna", "s",""],
+	"antenna" : ["Antenna", "s","RF_ANTENNA"],
 	"rflvl" : ["RF", "s", ""],
-	"rfgpeak" : ["RF Level", "f1", ""],
+	"rfgpeak" : ["RF Level", "f1", "RX_RF_LVL"],
 	"audiolvl" : ["Audio Level", "s", ""],
-	"audlvlpk" : ["Audio Level Peak", "f2", ""],	
+	"audlvlpk" : ["Audio Level Peak", "f2", "AUDIO_LVL"],	
 	"encrypt" : ["Encryption", "s", ""],
-	"battrun" : ["Battery Runtime", "s", ""],
+	"battrun" : ["Battery Runtime", "s", "BATT_RUN_TIME"],
 	"battcycle" : ["Battery Cycles", "s", ""],
-	"battype" : ["Battery Type", "s", ""],
-	"battcharge" : ["Battery Charge", "f3", ""]};
+	"battype" : ["Battery Type", "s", "BATT_TYPEBATT_CYCLE"],
+	"battcharge" : ["Battery Charge", "f3", "BATT_BARS"],
+	"battbars" : ["Battery Bars", "en", ""]};
 
 // =======================================
 //			FUNCTION INIT
@@ -73,9 +74,10 @@ function init() {
 			p.setAttribute("readonly" ,true);}			
 			else if (contain[champs[n]][1] == "f3") {
 			p=chan.addFloatParameter(contain[champs[n]][0], "", 0,0,5); 
-			p.setAttribute("readonly" ,true);} }			
+			p.setAttribute("readonly" ,true);} 
+			else if (contain[champs[n]][1] == "en") {	
 			p=chan.addEnumParameter("Battery Bars", "Battery Bars","unknown","255","5/5 full","5","4/5 bars","4","3/5 bars","3","2/5 bars","2","1/5 bars","1","0/5 alerte !", "0");
-			p.setAttribute("readonly" ,true);	
+			p.setAttribute("readonly" ,true);	}		}
 			
 	
 			
@@ -419,8 +421,6 @@ function decAudioGain(addgain) {
 }
 
 function setMeterRate(rate) {
-  rate = toInt(rate);
-  if ((ch == 1 || ch == 2) && ((rate >= 100 && rate <= 65535) || rate == 0)) {
     local.send("< SET " + ch + " METER_RATE " + rate + " >");
-  }
+
 }
