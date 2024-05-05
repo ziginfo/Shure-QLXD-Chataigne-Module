@@ -27,7 +27,7 @@ var contain = {
 	"battbars" : 	["Battery Bars", "en", ""]};
 
 // =======================================
-//			FUNCTION INIT
+//	FUNCTION INIT
 // =======================================
 
 function init() {
@@ -41,7 +41,7 @@ function init() {
 	
   
 // =======================================
-//			CREATE CONTAINERS
+//	CREATE CONTAINERS
 // =======================================
 
   
@@ -96,7 +96,7 @@ function update(delta){
   }
   
 // =======================================
-//			HELPER
+//	HELPER
 // =======================================
 
 function toInt(input) {
@@ -116,7 +116,7 @@ function toInt(input) {
 }
 
 // =======================================
-//			DATA RECEIVED
+//	DATA RECEIVED
 // =======================================
 
 function dataReceived(inputData) {
@@ -145,7 +145,7 @@ function dataReceived(inputData) {
       //script.log(parts[2]);
 
 // =======================================
-// 				RECEIVER INFOS 
+// 	RECEIVER INFOS 
 // =======================================
       
         local.values.receiver.modelName.set(model);
@@ -173,7 +173,7 @@ function dataReceived(inputData) {
         }
       }
 // =======================================
-//			 TRANSMITTER INFOS 
+//	TRANSMITTER INFOS 
 // =======================================
 
 
@@ -328,7 +328,7 @@ function dataReceived(inputData) {
 }
 
 // =======================================
-// 				PARAM CHANGE
+// 	PARAM CHANGE
 // =======================================
 
 function moduleParameterChanged(param) {
@@ -371,7 +371,7 @@ function moduleValueChanged(value) {
 }
 
 // =======================================
-// 				 REQUESTS 
+// 	REQUESTS 
 // =======================================
 
 function requestModel() {
@@ -418,7 +418,7 @@ function requests(string) {
 }
 
 // =======================================
-//  			 COMMANDS 
+//  	COMMANDS 
 // =======================================
 
 function setDeviceID(newid) {
