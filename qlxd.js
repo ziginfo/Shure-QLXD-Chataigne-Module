@@ -37,7 +37,7 @@ function init() {
   
 //------------------ Insert Parameters ------------------------
 	reset = local.parameters.addTrigger("Reset" , "Reset Update Rate Values" , false);
-  	rCh= local.parameters.addEnumParameter("Update Rate Ch 1", "Update Rate Ch 1","no Updates","00000","very slow (15sec)","15000","slow (5sec)","05000","medium (2,5sec)","02500","fast (1sec)","01000","faster (0,5sec)","00500","very fast (0.2sec)","00200","fastest (0,1sec)","00100");
+  	rCh= local.parameters.addEnumParameter("Update Rate", "Update Rate","no Updates","00000","very slow (15sec)","15000","slow (5sec)","05000","medium (2,5sec)","02500","fast (1sec)","01000","faster (0,5sec)","00500","very fast (0.2sec)","00200","fastest (0,1sec)","00100");
 	
   
 // =======================================
@@ -46,13 +46,15 @@ function init() {
 
   
 //=============== Device Container ==================
-	var dev = local.values.addContainer("Device");
+	var dev = local.values.addContainer("Receiver");
 	//	dev.setCollapsed(true);		
 		r=dev.addStringParameter("Model Name", "","");
 		r.setAttribute("readonly" ,true);
 		r=dev.addStringParameter("Receiver ID", "","");
 		r.setAttribute("readonly" ,true);
 		r=dev.addStringParameter("MAC Address", "","");
+		r.setAttribute("readonly" ,true);
+		r=dev.addStringParameter("IP Address", "","");
 		r.setAttribute("readonly" ,true);
 		r=dev.addStringParameter("RF Band", "","");
 		r.setAttribute("readonly" ,true);
@@ -65,7 +67,7 @@ function init() {
 		
 //============== Channels Container ==================
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	 var chan = local.values.addContainer("Channel 1");
+	 var chan = local.values.addContainer("Transmitter");
 		chan.setCollapsed(true);	
 		chan.addTrigger("Update", "Request all the Values from the Hardware !!" , false);			
 		var champs = util.getObjectProperties(contain);
@@ -143,29 +145,31 @@ function dataReceived(inputData) {
       //script.log(parts[2]);
 
 // =======================================
-// 				DEVICE INFOS 
+// 				RECEIVER INFOS 
 // =======================================
       
-        local.values.device.modelName.set(model);
+        local.values.receiver.modelName.set(model);
      
       if (parts[1] == "DEVICE_ID") {
-        local.values.device.receiverID.set(string);
-      }
-      
+        local.values.receiver.receiverID.set(string);
+      } 
       if (parts[1] == "MAC_ADDR") {
-        local.values.device.macAddress.set(parts[2]);
+        local.values.receiver.macAddress.set(parts[2]);
+      }
+      if (parts[1] == "NET_SETTINGS") {
+        local.values.receiver.ipAddress.set(parts[4]);
       }
       if (parts[1] == "FW_VER") {
-        local.values.device.fwVersion.set(string);
+        local.values.receiver.fwVersion.set(string);
       }
       if (parts[1] == "RF_BAND") {
-        local.values.device.rfBand.set(string);
+        local.values.receiver.rfBand.set(string);
       }
       if (parts[1] == "FLASH") {
         if (parts[2] == "ON") {
-          local.values.device.flashing.set(true);
+          local.values.receiver.flashing.set(true);
         } else {
-          local.values.device.flashing.set(false);
+          local.values.receiver.flashing.set(false);
         }
       }
 // =======================================
@@ -174,52 +178,52 @@ function dataReceived(inputData) {
 
 
       if (parts[2] == "CHAN_NAME") {
-        local.values.channel1.getChild("name")
+        local.values.transmitter.getChild("name")
           .set(string);
       } 
       if (parts[2] == "TX_TYPE") {
-        local.values.channel1.getChild("transmitter")
+        local.values.transmitter.getChild("transmitter")
           .set(parts[3]);
       }
       if (parts[2] == "TX_PWR_LOCK") {
-        local.values.device.powerLock.set(parts[3]);
+        local.values.receiver.powerLock.set(parts[3]);
       }
       if (parts[2] == "TX_MENU_LOCK") {
-        local.values.device.menuLock.set(parts[3]);
+        local.values.receiver.menuLock.set(parts[3]);
       }
       if (parts[2] == "METER_RATE") {
-        local.parameters.getChild("updateRateCh" + parts[1]).setData(parts[3]);
+        local.parameters.updateRate.setData(parts[3]);
       }
       if (parts[2] == "GROUP_CHAN") {
       	var grp_chan = parts[3];
         grp_chan =  grp_chan.split(",");
           
-        local.values.channel1.rfGroup.set(grp_chan[0]);
-        local.values.channel1.rfChannel.set(grp_chan[1]);
+        local.values.transmitter.rfGroup.set(grp_chan[0]);
+        local.values.transmitter.rfChannel.set(grp_chan[1]);
       }
       if (parts[2] == "AUDIO_GAIN") {
           parts[3] = parts[3].substring(1, parts[3].length);
           var val = parseFloat(parts[3]) - 18 ;
           val = val+" db" ;
         //root.modules.shureQLX_D.parameters.updateRateCh1
-        local.values.channel1.audioGain.set(val);
+        local.values.transmitter.audioGain.set(val);
       }
       if (parts[2] == "TX_OFFSET") {
 		var val = parseFloat(parts[3]) ;
 		if (val == 255) { val = "NO TRANSMITTER" ;}
 		else {val = val+" db" ;}
-        local.values.channel1.gainOffset.set(val);
+        local.values.transmitter.gainOffset.set(val);
       }
        if (parts[2] == "TX_MUTE_STATUS") {
-        local.values.channel1.mute.set(parts[3]);
+        local.values.transmitter.mute.set(parts[3]);
       }
       if (parts[2] == "RX_RF_LVL") {
       var rfparse = parseFloat(parts[3]) -115;
       	if (rfparse > -10) {rf = rfparse+" dBm - OverLoad!";}
          else if (rfparse < -75) {rf = "RF too low !";}
          else {rf = rfparse+" dBm";}
-        local.values.channel1.rf.set(rf);
-        local.values.channel1.rfLevel.set(rfparse);
+        local.values.transmitter.rf.set(rf);
+        local.values.transmitter.rfLevel.set(rfparse);
       }
                
       if (parts[2] == "AUDIO_LVL") {
@@ -228,12 +232,12 @@ function dataReceived(inputData) {
       if (level < -47)
         {var lvlstring = "NO SIGNAL" ;}
       else {lvlstring = level+" dbFS" ;}
-     	local.values.channel1.audioLevel.set(lvlstring);
-        local.values.channel1.audioLevelPeak.set(level);
+     	local.values.transmitter.audioLevel.set(lvlstring);
+        local.values.transmitter.audioLevelPeak.set(level);
       }
            
       if (parts[2] == "TX_RF_PWR") {
-        local.values.channel1.rfPower.set(parts[3]);
+        local.values.transmitter.rfPower.set(parts[3]);
       }
       
       if (parts[2] == "RF_ANTENNA") {
@@ -241,37 +245,37 @@ function dataReceived(inputData) {
       	if (ant== "XX" || ant== "" ){ ant = "RF no antenna" ;}
       	if (ant== "AX"){ ant = "antenna A" ;}
       	if (ant== "XB"){ ant = "antenna B" ;}
-        local.values.channel1.antenna.set(ant);
+        local.values.transmitter.antenna.set(ant);
       }
       if (parts[2] == "FREQUENCY") {
         dec = parts[3].substring(parts[3].length - 3, parts[3].length);
         lead = parts[3].substring(0, parts[3].length - 3);
-        local.values.channel1.frequency.set(lead + "." + dec);
+        local.values.transmitter.frequency.set(lead + "." + dec);
          var band = "--" ;
         if(lead >470 && lead< 534){ band = "G51" ;}
         else if(lead >534 && lead< 598){ band = "H51" ;}
         else if(lead >606 && lead< 670){ band = "K51" ;}
-        local.values.device.rfBand.set(band);
+        local.values.receiver.rfBand.set(band);
       }
       if (parts[1] == "ENCRYPTION") {
-        local.values.channel1.encryption.set(parts[2]);
+        local.values.transmitter.encryption.set(parts[2]);
       }
        if (parts[2] == "BATT_TYPE") {
-        local.values.channel1.batteryType.set(parts[3]);
+        local.values.transmitter.batteryType.set(parts[3]);
       }
       if (parts[2] == "BATT_BARS") {
       var charge = parseFloat(parts[3]) ;
       if ( charge <= 5){ charge = charge*20 ;}
       else {charge = 0 ;}
-        local.values.channel1.batteryBars.setData(parseInt(parts[3]));
-        local.values.channel1.batteryCharge.set(charge);
+        local.values.transmitter.batteryBars.setData(parseInt(parts[3]));
+        local.values.transmitter.batteryCharge.set(charge);
       }
       if (parts[2] == "BATT_CYCLE") {
       	var cycle = parseInt(parts[3]);
       	 if (cycle == 65535) {
-          local.values.channel1.batteryCycles.set("SHOWN ONLY FOR SB900 !");}
+          local.values.transmitter.batteryCycles.set("SHOWN ONLY FOR SB900 !");}
           else
-          {local.values.channel1.batteryCycles.set(""+cycle+"");}
+          {local.values.transmitter.batteryCycles.set(""+cycle+"");}
       }
       if (parts[2] == "BATT_RUN_TIME") {
         mins = parseInt(parts[3]);
@@ -286,7 +290,7 @@ function dataReceived(inputData) {
         } else if (mins == 65535) {
           lbl = "SHOWN ONLY FOR SB900 !";
         }  
-        local.values.getChild("channel" + parts[1]).batteryRuntime.set(lbl);
+        local.values.transmitter.batteryRuntime.set(lbl);
       }
     } else if (parts[0] == "SAMPLE") {
       if (parts[2] == "ALL") {
@@ -295,15 +299,15 @@ function dataReceived(inputData) {
       	if (ant== "XX" || ant== "" ){ ant = "RF no antenna" ;}
       	if (ant== "AX"){ ant = "antenna A" ;}
       	if (ant== "XB"){ ant = "antenna B" ;}
-        local.values.channel1.antenna.set(ant);
+        local.values.transmitter.antenna.set(ant);
         
          //RF Level
          var rfparse = parseFloat(parts[4]) -115 ;
          if (rfparse >= -10) {rf = rfparse+" dBm - OverLoad!";}
          else if (rfparse < -75) {rf = "RF too low !";}
          else {rf = rfparse+" dBm";}
-        local.values.channel1.rf.set(rf);
-        local.values.channel1.rfLevel.set(rfparse);
+        local.values.transmitter.rf.set(rf);
+        local.values.transmitter.rfLevel.set(rfparse);
         
         //Audio Level Peak
         var parselvl = parseFloat(parts[5]) ;
@@ -316,8 +320,8 @@ function dataReceived(inputData) {
         {level = level+" dbFS -> Clip !!" ;}
         else {level = level+" dbFS" ;}
         var lvlstring = parselvl - 50 ;
-        local.values.channel1.audioLevel.set(level);
-        local.values.channel1.audioLevelPeak.set(lvlstring);
+        local.values.transmitter.audioLevel.set(level);
+        local.values.transmitter.audioLevelPeak.set(lvlstring);
       }
     }
   }
@@ -332,9 +336,9 @@ function moduleParameterChanged(param) {
   		if (param.name == "isConnected" && param.get() == 1) {
     	getAll();  }
     	if (param.name == "reset") {
-    	local.parameters.updateRateCh1.set("no Updates"); }
-	  	if (param.name == "updateRateCh1")
-	  	var value = local.parameters.updateRateCh1.get() ; 
+    	local.parameters.updateRate.set("no Updates"); }
+	  	if (param.name == "updateRate")
+	  	var value = local.parameters.updateRate.get() ; 
 		{local.send("< SET 1 METER_RATE " +value+ " >");}
 	
 }
