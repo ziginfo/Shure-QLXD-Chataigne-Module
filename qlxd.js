@@ -33,6 +33,11 @@ function init() {
   //request all value fields
   getAll();
   
+//------------------ Insert Parameters ------------------------
+	reset = local.parameters.addTrigger("Reset" , "Reset Update Rate Values" , false);
+  	rCh= local.parameters.addEnumParameter("Update Rate Ch 1", "Update Rate Ch 1","no Updates","00000","very slow (15sec)","15000","slow (5sec)","05000","medium (2,5sec)","02500","fast (1sec)","01000","faster (0,5sec)","00500","very fast (0.2sec)","00200","fastest (0,1sec)","00100");
+	
+  
 // =======================================
 //			CREATE CONTAINERS
 // =======================================
@@ -73,7 +78,7 @@ function init() {
 			p=chan.addFloatParameter(contain[champs[n]][0], "", -50,-50,-1);
 			p.setAttribute("readonly" ,true);}			
 			else if (contain[champs[n]][1] == "f3") {
-			p=chan.addFloatParameter(contain[champs[n]][0], "", 0,0,5); 
+			p=chan.addFloatParameter(contain[champs[n]][0], "", 0,0,100); 
 			p.setAttribute("readonly" ,true);} 
 			else if (contain[champs[n]][1] == "en") {	
 			p=chan.addEnumParameter("Battery Bars", "Battery Bars","unknown","255","5/5 full","5","4/5 bars","4","3/5 bars","3","2/5 bars","2","1/5 bars","1","0/5 alerte !", "0");
@@ -243,7 +248,8 @@ function dataReceived(inputData) {
       }
       if (parts[2] == "BATT_BARS") {
       var charge = parseFloat(parts[3]) ;
-      if ( charge > 5){charge = 0 ;}
+      if ( charge <= 5){ charge = charge*20 ;}
+      else {charge = 0 ;}
         local.values.channel1.batteryBars.setData(parseInt(parts[3]));
         local.values.channel1.batteryCharge.set(charge);
       }
@@ -307,14 +313,15 @@ function dataReceived(inputData) {
 // =======================================
 
 function moduleParameterChanged(param) {
-  //script.log(param.name + " parameter changed, new value: " + param.get());
-  //root.modules.shureQLX_D.parameters.output.isConnected
-  if (param.name == "isConnected" && param.get() == 1) {
-    getAll();
-  }
-	  if (param.name == "updateRateCh1")
-	  var value = local.parameters.updateRateCh1.get() ; 
-	{local.send("< SET 1 METER_RATE " +value+ " >");}
+
+  		if (param.name == "isConnected" && param.get() == 1) {
+    	getAll();  }
+    	if (param.name == "reset") {
+    	local.parameters.updateRateCh1.set("no Updates"); }
+	  	if (param.name == "updateRateCh1")
+	  	var value = local.parameters.updateRateCh1.get() ; 
+		{local.send("< SET 1 METER_RATE " +value+ " >");}
+	
 }
 
 
