@@ -197,7 +197,7 @@ function dataReceived(inputData) {
       }
       if (parts[2] == "AUDIO_GAIN") {
           parts[3] = parts[3].substring(1, parts[3].length);
-          var val = parseInt(parts[3]) - 18 ;
+          var val = parseFloat(parts[3]) - 18 ;
           val = val+" db" ;
         //root.modules.shureQLX_D.parameters.updateRateCh1
         local.values.channel1.audioGain.set(val);
