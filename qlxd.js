@@ -214,8 +214,10 @@ function dataReceived(inputData) {
       if (parts[2] == "AUDIO_LVL") {
       var parselvl = parseFloat(parts[3]);
       var level = parselvl - 50 ;
-      var lvlstring = level+" dbFS" ;
-     	local.values.channel1.audioLevel.set(level+" dbFS");
+      if (level < -47)
+        {var lvlstring = "NO SIGNAL" ;}
+      else {lvlstring = level+" dbFS" ;}
+     	local.values.channel1.audioLevel.set(lvlstring);
         local.values.channel1.audioLevelPeak.set(level);
       }
            
@@ -295,7 +297,9 @@ function dataReceived(inputData) {
         //Audio Level Peak
         var parselvl = parseFloat(parts[5]) ;
 		var level = parselvl - 50 ;
-        if (level > -12 && level < -6)
+		if (level < -47)
+        {level = "NO SIGNAL" ;}
+        else if (level < -47 && level < -6)
         {level = level+" dbFS -> Limit!" ;}
         else if (level >= -6 )
         {level = level+" dbFS -> Clip !!" ;}
