@@ -377,19 +377,19 @@ function requestFwVersion() {
 }
 
 function requestChName(ch) {
-  local.send("< GET " + ch + " CHAN_NAME >");
+  local.send("< GET 1 CHAN_NAME >");
 }
 
 function requestChAGain(ch) {
-  local.send("< GET " + ch + " AUDIO_GAIN >");
+  local.send("< GET 1 AUDIO_GAIN >");
 }
 
 function requestChGroup(ch) {
-  local.send("< GET " + ch + " GROUP_CHAN >");
+  local.send("< GET 1 GROUP_CHAN >");
 }
 
 function requestChFreq() {
-  local.send("< GET " + ch + " FREQUENCY >");
+  local.send("< GET 1 FREQUENCY >");
 }
 
 function getAll() {
