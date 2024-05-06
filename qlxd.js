@@ -1,5 +1,6 @@
-// =========== VARS ===========================
-//var channel_1_flashtime = 0;
+// =======================================
+// 		VARS
+// =======================================
 var todo = false;
 var string= "" ;
 var ch = 1 ;
@@ -17,8 +18,8 @@ var contain = {
 	"antenna" : 	["Antenna", "s","RF_ANTENNA"],
 	"rflvl" : 		["RF", "s", ""],
 	"rfgpeak" : 	["RF Level", "f1", "RX_RF_LVL"],
-	"audiolvl" : 	["Audio Level", "s", ""],
-	"audlvlpk" : 	["Audio Level Peak", "f2", "AUDIO_LVL"],	
+	"audiolvl" : 	["Audio", "s", ""],
+	"audlvlpk" : 	["Audio Level", "f2", "AUDIO_LVL"],	
 	"encrypt" : 	["Encryption", "s", ""],
 	"battrun" : 	["Battery Runtime", "s", "BATT_RUN_TIME"],
 	"battcycle" : 	["Battery Cycles", "s", ""],
@@ -27,21 +28,19 @@ var contain = {
 	"battbars" : 	["Battery Bars", "en", ""]};
 
 // =======================================
-//	FUNCTION INIT
+//		FUNCTION INIT
 // =======================================
 
 function init() {
-  script.setUpdateRate(1);
-  //request all value fields
-  getAll();
+  	getAll();
   
 //------------------ Insert Parameters ------------------------
 	reset = local.parameters.addTrigger("Reset" , "Reset Update Rate Values" , false);
-  	rCh= local.parameters.addEnumParameter("Update Rate", "Update Rate","no Updates","00000","very slow (15sec)","15000","slow (5sec)","05000","medium (2,5sec)","02500","fast (1sec)","01000","faster (0,5sec)","00500","very fast (0.2sec)","00200","fastest (0,1sec)","00100");
+  	rCh= local.parameters.addEnumParameter("Feedback", "Update Rate","no Updates","00000","very slow (15sec)","15000","slow (5sec)","05000","medium (2,5sec)","02500","fast (1sec)","01000","faster (0,5sec)","00500","very fast (0.2sec)","00200","fastest (0,1sec)","00100");
 	
   
 // =======================================
-//	CREATE CONTAINERS
+//		CREATE CONTAINERS
 // =======================================
 
   
@@ -92,11 +91,9 @@ function init() {
 			
 }
 
-function update(delta){
-  }
-  
+
 // =======================================
-//	HELPER
+//		HELPER
 // =======================================
 
 function toInt(input) {
@@ -116,7 +113,7 @@ function toInt(input) {
 }
 
 // =======================================
-//	DATA RECEIVED
+//		DATA RECEIVED
 // =======================================
 
 function dataReceived(inputData) {
@@ -145,7 +142,7 @@ function dataReceived(inputData) {
       //script.log(parts[2]);
 
 // =======================================
-// 	RECEIVER INFOS 
+// 		RECEIVER INFOS 
 // =======================================
       
         local.values.receiver.modelName.set(model);
@@ -173,7 +170,7 @@ function dataReceived(inputData) {
         }
       }
 // =======================================
-//	TRANSMITTER INFOS 
+//		TRANSMITTER INFOS 
 // =======================================
 
 
@@ -192,7 +189,7 @@ function dataReceived(inputData) {
         local.values.receiver.menuLock.set(parts[3]);
       }
       if (parts[2] == "METER_RATE") {
-        local.parameters.updateRate.setData(parts[3]);
+        local.parameters.feedback.setData(parts[3]);
       }
       if (parts[2] == "GROUP_CHAN") {
       	var grp_chan = parts[3];
@@ -205,7 +202,6 @@ function dataReceived(inputData) {
           parts[3] = parts[3].substring(1, parts[3].length);
           var val = parseFloat(parts[3]) - 18 ;
           val = val+" db" ;
-        //root.modules.shureQLX_D.parameters.updateRateCh1
         local.values.transmitter.audioGain.set(val);
       }
       if (parts[2] == "TX_OFFSET") {
@@ -232,8 +228,8 @@ function dataReceived(inputData) {
       if (level < -47)
         {var lvlstring = "NO SIGNAL" ;}
       else {lvlstring = level+" dbFS" ;}
-     	local.values.transmitter.audioLevel.set(lvlstring);
-        local.values.transmitter.audioLevelPeak.set(level);
+     	local.values.transmitter.audio.set(lvlstring);
+        local.values.transmitter.audioLevel.set(level);
       }
            
       if (parts[2] == "TX_RF_PWR") {
@@ -320,58 +316,46 @@ function dataReceived(inputData) {
         {level = level+" dbFS -> Clip !!" ;}
         else {level = level+" dbFS" ;}
         var lvlstring = parselvl - 50 ;
-        local.values.transmitter.audioLevel.set(level);
-        local.values.transmitter.audioLevelPeak.set(lvlstring);
+        local.values.transmitter.audio.set(level);
+        local.values.transmitter.audioLevel.set(lvlstring);
       }
     }
   }
 }
 
 // =======================================
-// 	PARAM CHANGE
+// 		PARAM CHANGE
 // =======================================
 
 function moduleParameterChanged(param) {
 
   		if (param.name == "isConnected" && param.get() == 1) {
     	getAll();  }
+    	
     	if (param.name == "reset") {
-    	local.parameters.updateRate.set("no Updates"); }
-	  	if (param.name == "updateRate")
-	  	var value = local.parameters.updateRate.get() ; 
+    	local.parameters.feedback.set("no Updates"); }
+    	
+	  	if (param.name == "feedback")
+	  	var value = local.parameters.feedback.get() ; 
 		{local.send("< SET 1 METER_RATE " +value+ " >");}
 	
 }
 
 
 // =======================================
-// 				 VALUE CHANGE 
+// 		VALUE CHANGE 
 // =======================================
 
 function moduleValueChanged(value) {
 	
 	if (value.name == "update") {
-      local.send("< GET 1 ALL >");
+      local.send("< GET 0 ALL >");
     }
-  if (value.getParent().name == "device") {
-    if (value.name == "flashing" && value.get() == 1) {
-      setFlashing(0);
-    }
-    if (value.name == "deviceID") {
-      setDeviceID(value.get());
-    }
-  }
-  if (value.getParent().name.substring(0, 7) == "channel") {
-    channel = value.getParent().name.substring(7, 8);
-    if (value.name == "flashing" && value.get() == 1) {
-      setFlashing(channel);
-    }
-
-  }
+ 
 }
 
 // =======================================
-// 	REQUESTS 
+// 		REQUESTS 
 // =======================================
 
 function requestModel() {
@@ -447,6 +431,6 @@ function decAudioGain(addgain) {
 }
 
 function setMeterRate(rate) {
-    local.send("< SET " + ch + " METER_RATE " + rate + " >");
+    local.send("< SET 1 METER_RATE " + rate + " >");
 
 }
