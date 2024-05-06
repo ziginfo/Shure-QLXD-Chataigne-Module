@@ -335,9 +335,8 @@ function moduleParameterChanged(param) {
     	if (param.name == "reset") {
     	local.parameters.feedback.set("no Updates"); }
     	
-	  	if (param.name == "feedback")
-	  	var value = local.parameters.feedback.get() ; 
-		{local.send("< SET 1 METER_RATE " +value+ " >");}
+	  	if (param.name == "feedback"){
+	  	setMeterRate(param.get());}
 	
 }
 
@@ -415,19 +414,19 @@ function sendLine(line) {
 
 function setChannelName(newName) {
     local.send(
-      "< SET " + ch + " CHAN_NAME {" +newName+ "} >" );
+      "< SET 1 CHAN_NAME {" +newName+ "} >" );
 }
 
 function setAudioGain(gain) {
-    local.send("< SET " + ch + " AUDIO_GAIN " + (gain + 18) + " >");
+    local.send("< SET 1 AUDIO_GAIN " + (gain + 18) + " >");
 }
 
 function incAudioGain(addgain) {
-    local.send("< SET " + ch + " AUDIO_GAIN INC " + addgain + " >");
+    local.send("< SET 1 AUDIO_GAIN INC " + addgain + " >");
 }
 
 function decAudioGain(addgain) {
-	local.send("< SET " + ch + " AUDIO_GAIN DEC " + addgain + " >");
+	local.send("< SET 1 AUDIO_GAIN DEC " + addgain + " >");
 }
 
 function setMeterRate(rate) {
